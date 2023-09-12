@@ -111,7 +111,13 @@ public class JWTService {
 		
 	public String generateToken(UserDetails userDetails) {
 		
-		final Map<String, Object> claims = Collections.singletonMap("ROLES", userDetails.getAuthorities().toString());
+		//final Map<String, Object> claims = Collections.singletonMap("ROLES", userDetails.getAuthorities().toString());
+		final Map<String, Object> claims = Collections.singletonMap("usuario", "un usuario cualquiera");
+		/*Map<String, Object> claims = Map.of();
+		
+		claims.put("ROLES", userDetails.getAuthorities().toString());
+		claims.put("usuario", "un usuario cualquiera");*/
+		
 		
 		//Aquí es donde podríamos pasar datos en el objeto claims del token que estamos creando
 		return this.getToken(claims, userDetails.getUsername());

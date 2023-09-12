@@ -108,4 +108,26 @@ public class SecurityConfig {
 		
 		return source;
 	}
+	
+	//Ejemplo de otro tipo de configuración de CORS menos específico
+	/*
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		
+		var config = new CorsConfiguration();
+		
+		
+		//config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));	
+		config.setAllowedHeaders(List.of("*"));
+		config.setAllowedOrigins(List.of("*"));
+		config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
+		config.setAllowCredentials(true);
+		config.setExposedHeaders(List.of("Authorization")); //De esta forma podemos acceder a la info de "Authorization"
+															//(headers del respnse) por ejemplo en un interceptor de Angular
+		var source = new UrlBasedCorsConfigurationSource();
+		
+		
+		
+	}
+	*/
 }
