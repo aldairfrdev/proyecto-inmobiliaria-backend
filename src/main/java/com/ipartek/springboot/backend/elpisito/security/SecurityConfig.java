@@ -1,5 +1,7 @@
 package com.ipartek.springboot.backend.elpisito.security;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-//import org.springframework.security.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 
 @Configuration
 public class SecurityConfig {
@@ -28,19 +34,36 @@ public class SecurityConfig {
 		
 		http.authorizeRequests(auth -> {
 			
+			//Podemos jugar con el SELECTOR: .anyRequest(), requestMatchers(9 por un lado
+			//Podemos jugar con el AUTORIZADOR: .oermitAll(), authenticated() y .hasRole() por otro
+			//haciendo combinaciones entre un selector y un autorizador
 			
-			auth.anyRequest().permitAll();
 			
+			//auth.anyRequest().permitAll();
 			//auth.anyRequest().authenticated();
 			
+			//auth.requestMatchers("/api/inmuebles").authenticated();
+			//auth.requestMatchers("api/**").hasRole("USER");
+			//auth.requestMatchers("api/**").hasRole("USER,ADMIN,READER");
+			//auth.requestMatchers("api/**").authenticated();
+			//auth.requestMatchers("api/inmuebles").hasAnyRole("USER");
+			//auth.anyRequest().hasRole("USER"); //Es obligatorio para Spring Security que en la BBDD esté anotado como "ROLE_NOMBRE"
+			//auth.anyRequest().permitAll();
+			
+			auth.requestMatchers("/authenticate").permitAll();
+			
+			//auth.requestMatchers("/media/**").permitAll();
+			
+			//auth.requestMatchers("api/**").hasRole("USER");
 			
 			
-		}).formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
+			
+		}); //.formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
 		
 		
 		http.addFilterAfter(jwtValidationFilter, BasicAuthenticationFilter.class);
 		
-		http.cors( cors -> cors.disable());
+		http.cors( cors -> corsConfigurationSource());
 		
 		http.csrf( csrf -> csrf.disable() );
 		
@@ -70,5 +93,19 @@ public class SecurityConfig {
 		return configuration.getAuthenticationManager();
 	}
 	
-	
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		
+		var config = new CorsConfiguration();
+		
+		config.setAllowedOrigins(List.of("*"));
+		config.setAllowedMethods(List.of("*"));
+		config.setAllowedHeaders(List.of("*"));
+		
+		var source = new UrlBasedCorsConfigurationSource();
+		
+		source.registerCorsConfiguration("/**", config);
+		
+		return source;
+	}
 }
