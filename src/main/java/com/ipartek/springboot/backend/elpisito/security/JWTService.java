@@ -4,11 +4,17 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import com.ipartek.springboot.backend.elpisito.models.dao.IUsuarioDAO;
+import com.ipartek.springboot.backend.elpisito.models.entity.Usuario;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,13 +26,17 @@ public class JWTService {
 	/*
 	 * En esta clase vamos a definir varios parámetros 
 	 * como tiempo de validez del token, el nombre secreto,
-	 * conseguir los claims dentro de un objeto Claims
+	 * conseguir los claims dentro de un objeto Claims (key-valor)
+	 * crear el token, verificar si es válido, etc
 	 * 
 	 */
 	
 	public static final long JWT_TOKEN_VALIDITY = 1200; //segundos = 20 minutos
 	public static final String JWT_SECRET = "IODNXCSUEMAWQLEPSJENCFUTWXTYDGHZQNFDJ";
 	
+	
+	@Autowired
+	private IUsuarioDAO usuarioDAO;
 	
 	///////////////////////////////////////////////////////////////////////
 	//MÉTODOS PARA OBTENER INFORMACIÓN DEL TOKEN
@@ -111,13 +121,19 @@ public class JWTService {
 		
 	public String generateToken(UserDetails userDetails) {
 		
+		Usuario elUsuario = usuarioDAO.findOneByEmail(userDetails.getUsername()).map(usuario ->{
+			return usuario; //Lo mismo que consigo el usuario podría conseguir también el Id...todos los atributos del usuario
+
+		}).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado en la BBDD"));
+		
 		//final Map<String, Object> claims = Collections.singletonMap("ROLES", userDetails.getAuthorities().toString());
-		final Map<String, Object> claims = Collections.singletonMap("usuario", "un usuario cualquiera");
-		/*Map<String, Object> claims = Map.of();
+		//final Map<String, Object> claims = Collections.singletonMap("usuario", "un usuario cualquiera");
 		
+		//Es aquí donde podríamos pasar datos en el el objeto claims del token que estamos creando
+		final Map<String, Object> claims = new HashMap();
 		claims.put("ROLES", userDetails.getAuthorities().toString());
-		claims.put("usuario", "un usuario cualquiera");*/
-		
+		claims.put("usuario", elUsuario.getUser());
+		claims.put("id", elUsuario.getId());
 		
 		//Aquí es donde podríamos pasar datos en el objeto claims del token que estamos creando
 		return this.getToken(claims, userDetails.getUsername());

@@ -23,9 +23,10 @@ public class JWTUserDetailsService implements UserDetailsService {
 	/*
 	 * Tenemos anotado un objeto de la clase UserDetailsService como @Servicio
 	 * y es lo único que necesita SpringSecurity para tener un User ACTIVO
-	 * que se le suele cargar 
-	 * 
-	 * 
+	 * que se le suele cargar generalmente desde una BBDD.
+	 * Es muy importante porque es así como SpringSecurity conoce el nombre
+	 * del usuario (ACTIVO), la contraseña etc (en nuestro caso el e-mail que
+	 * va a actuar como usuario y consigue realizar el proceso de autenticación.
 	 * 
 	 */
 	
