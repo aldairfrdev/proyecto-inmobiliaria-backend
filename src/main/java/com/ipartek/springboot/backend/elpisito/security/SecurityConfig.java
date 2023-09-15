@@ -50,12 +50,14 @@ public class SecurityConfig {
 			//auth.anyRequest().hasRole("USER"); //Es obligatorio para Spring Security que en la BBDD esté anotado como "ROLE_NOMBRE"
 			//auth.anyRequest().permitAll();
 			
-			auth.requestMatchers("/authenticate").permitAll();
-			
+			//auth.requestMatchers("/authenticate").permitAll();
 			//auth.requestMatchers("/media/**").permitAll();
-			
 			//auth.requestMatchers("api/**").hasRole("USER");
 			
+			
+			//auth.anyRequest().permitAll();
+			auth.anyRequest().authenticated();
+			auth.requestMatchers("/authenticate").authenticated();
 			
 			
 		}); //.formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
